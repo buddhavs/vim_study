@@ -1,0 +1,1088 @@
+Vim Study:
+
+------------------------
+gvimrc:
+The gvimrc file does not replace the vimrc file, but is simply used for configurations that only apply to the GUI version of Vim.
+
+
+
+
+------------------------
+Commands:
+:echo $VIM
+:echo $HOME
+:echo $MYVIMRC
+
+source /path/to/external/file  <= Use this to keep the vimrc file clean.
+
+
+----
+Display current environment
+http://vim.wikia.com/wiki/Displaying_the_current_Vim_environment
+:abbreviate   - list abbreviations
+:args         - argument list
+:augroup      - augroups
+:autocmd      - list auto-commands
+:buffers      - list buffers
+:breaklist    - list current breakpoints
+:cabbrev      - list command mode abbreviations
+:changes      - changes
+:cmap         - list command mode maps
+:command      - list commands
+:compiler     - list compiler scripts
+:digraphs     - digraphs
+:file         - print filename, cursor position and status (like Ctrl-G)
+:filetype     - on/off settings for filetype detect/plugins/indent
+:function     - list user-defined functions (names and argument lists but not the full code)
+:function Foo - user-defined function Foo() (full code list)
+:highlight    - highlight groups
+:history c    - command history
+:history =    - expression history
+:history s    - search history
+:history      - your commands
+:iabbrev      - list insert mode abbreviations
+:imap         - list insert mode maps
+:intro        - the Vim splash screen, with summary version info
+:jumps        - your movements
+:language     - current language settings
+:let          - all variables
+:let FooBar   - variable FooBar
+:let g:       - global variables
+:let v:       - Vim variables
+:list         - buffer lines (many similar commands)
+:lmap         - language mappings (set by keymap or by lmap)
+:ls           - buffers
+:ls!          - buffers, including "unlisted" buffers
+:map!         - Insert and Command-line mode maps (imap, cmap)
+:map          - Normal and Visual mode maps (nmap, vmap, xmap, smap, omap)
+:map<buffer>  - buffer local Normal and Visual mode maps
+:map!<buffer> - buffer local Insert and Command-line mode maps
+:marks        - marks
+:menu         - menu items
+:messages     - message history
+:nmap         - Normal-mode mappings only
+:omap         - Operator-pending mode mappings only
+:print        - display buffer lines (useful after :g or with a range)
+:reg          - registers
+:scriptnames  - all scripts sourced so far
+:set all      - all options, including defaults
+:setglobal    - global option values
+:setlocal     - local option values
+:set          - options with non-default value
+:set termcap  - list terminal codes and terminal keys
+:smap         - Select-mode mappings only
+:spellinfo    - spellfiles used
+:syntax       - syntax items
+:syn sync     - current syntax sync mode
+:tabs         - tab pages
+:tags         - tag stack contents
+:undolist     - leaves of the undo tree
+:verbose      - show info about where a map or autocmd or function is defined
+:version      - list version and build options
+:vmap         - Visual and Select mode mappings only
+:winpos       - Vim window position (gui)
+:xmap         - visual mode maps only
+
+
+
+Paste the result:
+Redirect IO trick!
+:redir @a
+:let
+:redir END
+"ap
+----
+
+------------------------
+Diff:
+$vimdiff file1 file2 等於 vim -d file1 file2
+:set scrollbind
+:set noscrollbind
+
+[c: Go to start of the previous change
+]c: Go to start of the next change
+
+在有改變的檔案放到沒有改變的檔案
+:diffput
+在沒有改變的檔案抓有改變的檔案
+:diffget
+
+
+
+:diffsplit filename: Split the window horizontally and show the
+filename file in both of the windows. All diff-specific settings are set for
+both windows.
+
+:vert diffsplit filename: Split the window vertically and show the
+filename file in both of the windows. All diff-specific settings are set for
+both windows.
+
+:diffthis: Add the current window to the existing set of diff-enabled
+windows. This could be used if you want to diff a file again with yet
+another version.
+
+與之前存的現在改的做比對. 但要有filename~被存下來..
+:vert diffsplit filename~
+
+:vert diffpatch patchfile
+:diffpatch patchfile
+
+
+
+
+
+------------------------
+Fonts:
+Under gvim:
+:set guifont=Courier\ 14
+:set guifont=Courier\ New\ 12, Arial\ 10  <= back slash to escape space for font name.
+:set guifont=*
+
+Set fonts base on file type:
+autocmd BufEnter *.txt set guifont=Arial\ 12
+
+
+
+------------------------
+Colorscheme:
+:colorscheme mycolors
+list colorscheme:
+:colorscheme
+
+
+
+
+------------------------
+Matching:
+Compared to a color scheme, which affects the entire color setup, a color
+group is a rather small combination of background (or foreground) colors
+that you can use for things such as matches. When Vim is started, a wide
+range of color groups are set to default colors, depending on the color
+scheme you have selected.
+To see a complete list of color groups, use the command:
+:so $VIMRUNTIME/syntax/hitest.vim.
+
+The command has two arguments. The first one is the name of the color group that you will use in the highlight.
+The second argument is the actual pattern you want to match.
+:match Group /pattern/
+:match ErrorMsg /^Error/
+
+If you don't like any of the available color groups, you can always define your own.
+Create 'MyGroup' group.
+:highlight MyGroup ctermbg=red guibg=red gctermfg=yellow guifg=yellow term=bold
+---
+ctermb  Background color in console
+guibg   Background color in Gvim
+ctermf  Text color in console
+guifg   Text color in Gvim
+gui     Font formatting in Gvim
+term    Font formatting in console (for example, bold)
+---
+
+Clear match:
+:match NONE
+
+The match command can only match one pattern at a time, so Vim has provided you
+with two extra commands to match up to three patterns at a time. The commands are
+easy to remember because their names resemble those of the match command:
+:2match
+:3match
+
+
+Line more then 80 chars.
+:match ErrorMsg /\%>80v.\+/
+---
+\%> Match after column with the number right after this
+80  The column number
+v   Tells that it should work on virtual columns only
+.\+ Match one or more of any character
+---
+
+Match end line tabs:
+:match errorMsg /[^\t]\zs\t\+/
+---
+[^  Begin a group of characters that should not be matched
+\t  The tab character
+]   End of the character group
+\zs A zero-width match that places the "matching" at the beginning of the line, ignoring any whitespaces
+\t\+    One or more tabs in a row
+---
+
+
+
+
+------------------------
+At the bottom of the Vim editor, you will find two things:
+• The command line buffer (where you can input commands)
+• The status line
+
+Set status line format
+Here, format is a string such as printf (known from C programming) that describes how the status line should look.
+:set statusline format
+
+The bottom line 2 shows the status line.
+:set laststatus=2
+
+
+
+
+
+------------------------
+Track cursor
+:set cursorline
+:highlight CursorLine guibg=lightblue ctermbg=lightgray
+
+垂直column show:
+:set cursorcolumn
+
+
+
+
+
+------------------------
+Abbreviations
+:abbreviate: Abbreviations for all modes
+:iabbrev: Abbreviations for the insert mode
+:cabbrev: Abbreviations for the command line only
+
+e.g
+:iabbrev myAddr 32 Lincoln Road, Birmingham B27 6PA, United Kingdom
+
+創見一個
+abbreviations.vim
+然後
+:source $VIM/abbreviations.vim
+這樣乾淨.
+
+
+
+
+
+
+------------------------
+Key binding
+:help key-mapping
+
+
+The main commands to know when dealing with key bindings are:
+:map: For the Normal, Insert, Visual, and Command-line modes
+:imap: For the Insert mode only
+:cmap: For the Command-line mode only
+:nmap: For the Normal mode only
+:vmap: For the Visual mode only
+
+
+e.g
+<cr> means execute the command.
+:map <C-s> :w<cr>
+
+Keys:
+<BS>                        Backspace
+<Tab>                       Tab
+<CR>                        Enter
+<Enter>                     Enter
+<Return>                    Enter
+<Esc>                       Escape
+<Space>                     Space
+<Up>                    
+<Down>
+<Left>
+<Right>
+<F1> - <F12>
+#1, #2..#9,#0
+<Insert>
+<Del>
+<Home>
+<End>
+<PageUp>
+<PageDown>
+
+
+
+
+------------------------
+Navigate
+Move to previous/forward change:
+g,
+g;
+
+goto definition:
+gd
+gD      # global defined
+
+
+[[ and ][: Move backwards / forward to the next section beginning (forexample, start of a function)
+[] and ]]: Move backwards / forward to the next section end (for example, end of a function)
+
+
+[{: Move to the beginning of the block
+]}: Move to the end of the block
+
+
+[/: Move to the beginning of the comment block
+]/: Move to the end of the comment block
+
+
+Jump to help:
+Ctrl+]
+Jump back:
+Ctrl+T
+
+goto the #include file:
+gf
+
+
+
+
+------------------------
+Jump to search word
+
+*
+#
+
+g#          // partial word
+g*          // partial word
+
+
+
+
+------------------------
+buffers
+:buffers
+:buffer N
+:bnext
+:bprevious
+
+Having <buffer> in front of any commands limits its availability to the current buffer.
+
+
+
+------------------------
+Recording
+Let's start by looking at the commands to use:
+qa: Record from now on into register a. Any register can be used, but q is often used for simplicity.
+q: If pressed while recording, the recording is ended.
+@a: Executes the recording in register a (replace with any register).
+@@: Repeats the last executed command.
+
+You can add any number before the @ to repeat the execution of the recording that
+number of times. For example, 15@a will execute the recording in register a 15 times.
+
+
+
+------------------------
+session
+:mksession FILE
+:mksession! FILE    <= ! means override.
+:mkview FILE
+:set viewdir=$HOME/.vim/views
+
+Start vim with previous saved session:
+vim -S Session.vim
+
+or:
+:source Session.vim
+:loadview View.vim
+
+If you want Vim to remember settings such as cursor placement and folds
+when moving between multiple folders, you can add the following to
+your vimrc file:
+--
+set viewdir=$VIMHOME/views/
+autocmd BufWinLeave * mkview
+autocmd BufWinEnter * silent loadview
+--
+A view of the buffer is saved whenever you show another buffer in
+the same window, and it is restored when you show the buffer in the
+window again.
+
+
+
+
+------------------------
+registers
+
+unnamed register:
+任何delete/yank/copy會insert到這裡
+即使用named register, unnamed register "" 也會有一個copy.
+""
+
+small delete register:
+小於一行
+"-
+
+
+numbered registers:
+"0  永遠含有最後一次的delete/change, always update.
+"1  永遠含有最後一次的delete/change 但如果有指定register, "1 不會update.
+並且"1如果被更新，其中的值會往下一個register裡塞, e.g "2...
+
+
+
+named registers:
+a-z, A-Z
+大寫的register內容會被append, 不會清除.
+If you add the value '>' to your coptions, then the
+appended text in uppercase registers is split by a new line:
+:set coptions+='>'.
+
+
+
+read-only registers:
+"%: This register always contains the name of the file in the currently active buffer.
+"#: This register always contains the name of the previous file in the currently active buffer, also called the alternate file.
+".: This register always contains the last inserted text. Therefore, you will be able to repeat the last inserted text by executing the normal mode command ".P.
+":: This register contains the command you last executed on the command line. If you repeat a command from the history, then this register will not be overwritten with the command. You will have to write at least one character of the command in order to get it stored in the register.
+
+
+Selection and drop registers:
+"*
+"+
+"~
+
+
+black hole register:
+"-
+e.g
+"-x or "-dd
+ 
+ 
+Search pattern register:
+"/
+
+
+expression register:
+"=
+
+
+
+
+
+------------------------
+Folding
+:set foldenable
+zc: Close a fold
+zo: Open a fold
+zM: Close all folds
+zR: Open all folds
+
+
+
+
+
+
+
+
+
+
+------------------------
+顯示line number.
+:set number
+:set numberwidth=XXX
+
+
+
+
+
+------------------------
+Open file remotely:
+vim ftp://john@remote.server.com/public_html/index.html
+
+Read:
+:Nread ftp://john@remote.server.com/public_html/index.html
+:Nread remote.server.com john PASSWORD public_html/index.html
+
+Write:
+:Nwrite ftp://user@server/path/to/filename
+:Nwrite server user password path/filename
+
+
+As a default, Vim tries to reload the contents of a buffer whenever it is shown in a
+window. This means that if the file in the buffer is a remote file, then Vim will need
+to log in again in order to check if the file should be reloaded.
+
+不要reload file from remote if 切換windows, 也就是buffer不在window內.
+:set bufhidden=hide
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------
+Programming:
+
+-----------
+Syntax as Syntax highlighting:
+Syntax highlight 檔案在:
+$VIMHOME/syntax/
+
+:syntax keyword myVars x y
+:syntax match mySymbols "[{}();=]"
+:syntax keyword myKeywords if return
+:highlight myVars ctermfg=red guifg=red
+:highlight mySymbols ctermfg=blue guifg=blue
+:highlight myKeywords ctermfg=green guifg=green
+
+:syntax region myComments start=/\/\*/ end=/\*\//
+:syntax keyword myKeywords OBSOLETE FIXME TODO
+
+
+File types:
+use:
+filetype.vim
+--
+augroup filetypedetect
+autocmd BufNewFile,BufRead *.my
+ setfiletype my
+augroup END
+--
+
+-----------
+post-processing feature:
+檔案在:
+$VIMHOME/after
+裡頭的檔案與$VIMHOME/syntax/ 裡的檔案名稱須一樣!
+e.g
+$VIMHOME/syntax/c.vim
+$VIMHOME/after/syntax/c.vim
+
+VIMHOME下的目錄有:
+plugin
+ftplugin
+indent
+autoload
+syntax
+colors
+
+
+-----------
+Script types:
+1. Global plugins group
+2. File-Type plugins group
+
+Script 的種類:
+1. .vim
+2. compressed .zip
+3. Vimball, .vba, 列出vimball 內的檔案: :VimballList , 移除vimball: :RmVimball
+
+
+
+-----------
+語言層面:
+
+Types:
+1. string
+2. number
+
+String quote ", ' 與bash 一樣.
+:echo "string with\n two lines"
+:echo 'string with\n two lines'   // print \n
+:echo "ha" . "pica"  <= hapica   . operator 代表連結兩個string
+
+
+Escapes:
+\n
+\r
+\t
+\123
+\x123
+\u  Character encoded as up to 4 hex numbers
+\f  Form feed
+\e  Esc
+\b  Backspace
+
+
+--------
+Variables:
+String: A simple string such as "this is a string"
+Number: A numeric value such as 123 or 0x123
+List: An ordered sequence of items (an ordered array)
+Dictionary: An unordered associative array holding key-value pairs
+Funcref: A reference to a function
+
+All of the variable types are defined with the :let command
+:let myvar = VALUE
+:let mystringvar = "a string"
+
+When working with string and number variables in Vim, there is an automatic
+conversion going on between the two types depending on how you use them.
+This means that even though you execute this:
+:let mystringvar="123"
+
+you can still use this:
+:let mynumbervar=mystringvar-23
+
+and mystringvar is automatically converted in place when the other number is
+subtracted from it.
+
+You can force a string to become a number by adding 0 to it, for
+example:
+:let mynumber=mystringvar+0. 
+
+To force conversion from a number to a string, you can use the string() function: 
+:let mystring=string(mynumber).
+
+
+List:
+:let mylistvar1 = [1,2,"three",0x04, myfivevar]
+:let mylistvar2 = [[1,2,3],["four","five","six"]]   // list of lists
+:let mylistvar2 = [[1,2,3],["four","five","six"]]
+:echo mylistvar2[1][0]
+:echo mylistvar2[-1][-3]
+
+list append:
+:let mylistvar3 = [1,2,3,4]
+:call add(mylistvar3, 5)
+:echo mylistvar3
+
+list concatenate:
+:let mylistvar4 = [1,2,3,4]
+:let mylistvar4 = mylistvar4 + [5,6,7,8]
+:echo mylistvar4
+:let mylistvar4 += [5,6,7,8]
+
+:let mylistvar5 = [1,2,3,4]
+:call extend(mylistvar5, [5,6,7,8])
+:echo mylistvar5
+
+list remove:
+:call remove(mylistvar5, 3)
+
+
+
+Dictionary:
+:let mydictvar2 = {1: "one",2: "two","tens":{0: "ten",1: "eleven"}}
+:echo mydictvar1[2]
+
+get the value through key attribute
+:echo mydictvar4.apple
+
+attach a function to the dictionary variable:
+--
+let mynumbers = {0:'zero',1:'one',2:'two',3:'three',4:'four', 5:'five',6:'six',7:'seven',8:'eight',9:'nine'}
+
+function mynumbers.convert(numb) dict
+    return join(map(split(a:numb,'\zs'),'get(self, v:val,"unknown")'))  // 注意: 上面dict的意思為將variable 以'self' reference入function.
+endfunction
+--
+
+
+splite 用法:
+:let a = split("one two")
+
+
+map 用法: 與python類似
+let mylist = ["one", "two", "three"]
+:call map(mylist, "<" . v:val . ">")   // . 代表連接兩個string
+:echo mylist[0] " this prints <one>
+
+
+get 用法:
+:let mylist2 = ["one","two", "three"]
+:echo get(mylist2, 2,"none") " prints three
+:echo get(mylist2, 3, "none") " prints "none"
+
+join 用法:
+:let mylist3 = ["one", "two", "three"]
+:let mystring = join(mylist3, "+")
+:echo mystring " prints one+two+three
+
+
+
+Funcref:
+:let Myfuncrefvar = function("Myfunction")
+呼叫:
+:echo Myfuncrefvar()
+:call Myfuncrefvar()
+
+
+--------
+Variable scope:
+Without specifying which scope it belongs to, then it belongs to the global scope by default.
+If it is defined in a function, which causes it to only be available in the function itself.
+
+8 scopes:
+v: Vim predefined global scope
+g: Global scope
+b: Buffer scope—only available in the buffer where it was defined
+t: Tab scope—only available in the Vim tab where it was defined
+w: Window scope—only available to the current Vim window (viewport)
+l: Function scope—local to the function it is defined in
+s: Sourced file scope—local to a Vim script loaded using :source
+a: Argument scope—used in arguments for functions
+
+e.g
+--
+let g:sum=0
+function SumNumbers(num1,num2)
+    let l:sum = a:num1+a:num2
+    "check if previous sum was lower than this
+    if g:sum < l:sum
+        let g:sum=l:sum
+    endif
+    return l:sum
+endfunction
+
+echo SumNumbers(3,4)
+echo g:sum
+
+// 取消assign variable.
+unlet g:sum
+--
+
+
+
+
+------------
+關於& ampersand:
+http://learnvimscriptthehardway.stevelosh.com/chapters/19.html
+不是pointer~~~
+是reference to VIM內的option 而不是variable之意...
+Using an ampersand in front of a name tells Vim that you're referring to the option, not a variable that happens to have the same name.
+
+Local Options:
+:let &l:number = 1
+
+https://stackoverflow.com/a/20577464
+set option& <= 將option set to default value.
+------------
+
+
+
+--------
+Conditions
+e.g
+--
+if condition
+    code-to-execute-if-condition-is-met
+endif
+
+
+if condition
+    code-to-execute-if-condition-is-true
+else
+    code-to-execute-if-condition-is-NOT-true
+endif
+
+
+if condition1
+    code-to-execute-if-conition1-is-true
+elseif condition2
+    code-to-execute-if-condition2-is-true
+endif
+
+--
+
+string condition check:
+str1 =~ str2: True if str1 contains the str2 substring or is equal to str2
+str1 !~ str2: True if str1 does not contain, and is not equal to the str2 substring
+
+
+--------
+Loops
+1. For loop
+--
+for var in range
+    do-something
+endfor
+
+for myvar in range(1,10)
+    echo myvar
+endfor
+
+
+for var in list
+    do-somthing
+endfor
+
+
+let mydict = {a: "apple", b:"banana", c: "citrus" }
+for keyvar in keys(mydict)
+    echo mydict[keyvar]
+endfor
+
+
+let mydict = {a: "apple", b:"banana", c: "citrus" }
+for keyvar in sort(keys(mydict))
+    echo mydict[keyvar]
+endfor
+
+
+
+--
+
+
+2. While loop
+--
+while condition
+    execute-this-code
+endwhile
+
+
+let x=0
+while x <= 5
+    echo "x is now " x
+    continue  // 有continue  可用在for
+    let x+=1
+    break   // 有break   可用在for
+endwhile
+--
+
+
+
+--------
+Creating functions
+
+--
+function Name(arg1, arg2,...argN) keyword    // keyword 可以為 dict, range
+    code-to-execute-when-function-is-called
+    return 42
+endfunction
+
+
+//  a:{} as a list of the optional arguments.
+function PrintSum(num1, num2,...)
+    let sum = a:num1 + a:num2
+    let argnum = 1
+    
+    while argnum <= a:0
+        let sum += a:{argnum}
+        let argnum+=1
+    endwhile
+    
+    echo "the sum is " sum
+    return sum
+endfunction
+
+
+// a:000 as argument list type
+function PrintSum(num1, num2,...)
+    let sum = a:num1 + a:num2
+    
+    for arg in a:000
+        let sum += arg
+    endfor
+    
+    echo "the sum is " sum
+    return sum
+endfunction
+--
+
+
+Delete function
+:delfunction function-name
+
+---
+What is the meaining of '#' symbol in function name?
+https://vi.stackexchange.com/a/13007
+Autoload lets you delay loading code until it's actually needed, so if the following function:
+execute pathogen#infect()
+
+has already been loaded, Vim will simply call it normally. Otherwise Vim will look for a file called autoload/pathogen.vim in your ~/.vim directory .
+If this file exists, Vim will load/source the file. It will then try to call the function normally.
+
+Every # in the function name works like a path separator. Thus when calling a function:
+
+:call foo#bar#func()
+Vim will look for the file autoload/foo/bar.vim
+---
+
+
+
+
+--------
+Placeholders:
+!cursor! 
+
+
+-----------------------------
+Vim script architecture
+
+1. Script header
+2. Script-loaded check
+--
+if exists("loaded_myscript")
+    finish "stop loading the script     // finish: Stop sourcing a script.
+endif
+
+let loaded_myscript=1
+--
+
+
+3. Script configuration
+
+4. Key mappings
+hasmapto(): Function to check if a mapping to your function exists.
+<unique>: This tells Vim that it should give an error if a similar map exists.
+<Leader>: Lets the user decide which map leader to use. <Leader> is replaced by the contents of the global variable mapleader.
+<Plug>: This is a way to make a unique global identifier for a function, such that it will not clash with other functions in the global scope.
+
+--
+if !hasmapto('<Plug>MyscriptMyfunctionA')
+    map <unique> <Leader>a <Plug>MyscriptMyfunctionA
+endif
+--
+
+The first mapping maps our unique <Plug>MyscriptMyfunctionA identifier to
+<SID>MyfunctionA. We use <SID> here, because this little tag is exchanged with
+Vim's own unique ID for the current script, and this is needed if we want to make a
+global mapping to a function that is only available in the script scope (for example,
+s:MyfunctionA).
+The second mapping binds the actual function (<SID>MyfunctionA(), which is
+s:MyfunctionA()) to the global mapping <SID>MyfunctionA.
+http://learnvimscriptthehardway.stevelosh.com/chapters/51.html
+For more information, see:
+:help <SID>
+:help <Plug>
+:help 'script-local'
+--
+noremap <unique> <script> <Plug>MyscriptMyfunctionA <SID>MyfunctionA
+noremap <SID>MyfunctionA :call <SID>MyfunctionA()<CR>
+--
+
+5. Functions
+
+
+
+------------------------
+Debugging:
+vim -D somefile.txt
+:debug call Myfunction()
+:debug read somefile.txt
+:debug nmap ,a :call Myfunction() <CR>
+:debug help :debug
+
+
+------------------------
+Keep vimrc clean
+1. Always have Vim in nocompatible mode
+2. Use comments
+3. Group data
+4. Use multiple files
+5. Use other files for tests
+6. Use specific files for different operating systems / computers
+
+
+
+
+-------------------------
+Directory explained:
+Q:
+I understand it's the place to put things that should have the final say and not be overridden by another source, but I'm unclear on how to decide when to put something in, say, ~/.vim/after/ftplugin/ rather than ~/.vim/ftplugin/.
+Do people generally use ~/.vim/ftplugin/ and only move stuff into ~/.vim/after/ftplugin/ if they observe unwanted behavior, or do they just put it all in the after-directory right away?
+
+A:
+Generally, if you want to add your own plugin, or replace a standard plugin with your own,
+it would go into ~/.vim/plugin or ~/.vim/ftplugin. 
+
+If instead you want to keep the functionality of an existing plugin but add to it, or change just a few settings made by it, 
+then your plugin would go into ~/.vim/after/plugin or ~/.vim/after/ftplugin.
+
+
+-------------------------
+Add new file type:
+:help new-filetype
+
+create a new-filetype 步驟:
+1. 目錄: .vim/ftdetect 
+2.  Create a file that contains an autocommand to detect the file type.       
+e.g
+au BufRead,BufNewFile *.mine            set filetype=mine  
+
+
+
+--------------------------
+ftplugin 注意事項:
+:help write-filetype-plugin
+
+1. always setlocal
+2. setlocal to options' default value first
+ :setlocal formatoptions& formatoptions+=ro 
+
+3. mapping using <buffer>
+
+--
+if !hasmapto('<Plug>JavaImport')                                        
+    map <buffer> <unique> <LocalLeader>i <Plug>JavaImport                 
+endif                                                                   
+noremap <buffer> <unique> <Plug>JavaImport oimport ""<Left><Esc>
+--
+
+--
+ " Add mappings, unless the user didn't want this.                                                                                         
+        if !exists("no_plugin_maps") && !exists("no_mail_maps")                                                                                   
+          " Quote text by inserting "> "                                                                                                          
+          if !hasmapto('<Plug>MailQuote')                                                                                                         
+            vmap <buffer> <LocalLeader>q <Plug>MailQuote                                                                                          
+            nmap <buffer> <LocalLeader>q <Plug>MailQuote                                                                                          
+          endif                                                                                                                                   
+          vnoremap <buffer> <Plug>MailQuote :s/^/> /<CR>                                                                                          
+          nnoremap <buffer> <Plug>MailQuote :.,$s/^/> /<CR>                                                                                       
+        endif   
+--
+
+
+
+-------------------------
+<Plug>
+https://whileimautomaton.net/2008/09/27022735
+https://stackoverflow.com/a/18547013
+https://stackoverflow.com/a/3776182
+
+:map 為 recursive
+:noremap 為 非 recusive
+有個option 'remap' 設定:map的bevavior, 預設為'on'
+
+<Plug> 為一個indirection.
+
+e.g
+--
+原本這樣使用者無法重新 remap到別的key sequence
+nnoremap <expr> zz 'zz'.float2nr(winheight(0)*0.1).'<C-E>'
+
+而這樣就可以:
+nnoremap <expr> <Plug>NiceCenterCursor 'zz'.float2nr(winheight(0)*0.1).'<C-E>'
+nmap zz <Plug>NiceCenterCursor
+---
+
+
+--------------------------
+modelines:
+https://www.cs.swarthmore.edu/oldhelp/vim/modelines.html
+
+modelines
+modelines allow you to set variables specific to a file. By default, the first and last five lines are read by vim for variable settings.
+For example, if you put the following in the last line of a C program, you would get a textwidth of 60 chars when editing that file:
+
+
+/* vim: tw=60 ts=2: */
+The modelines variable sets the number of lines (at the beginning and end of each file) vim checks for initializations.
+
+-------------------------
+多行編輯:
+https://stackoverflow.com/a/20936607
+
+You can make a statement in vimscript span multiple lines by adding a \ to the start of the next line
+
+--
+let mylist = [
+  \"a",
+  \"b",
+  \"c",
+  \]
+--
+
+This is covered in :help line-continuation.
+
+
+-----------------------------
+<SID>
+https://stackoverflow.com/a/16768478
